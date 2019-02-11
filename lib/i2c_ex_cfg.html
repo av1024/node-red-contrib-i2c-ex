@@ -1,0 +1,29 @@
+<!-- i2c bus -->
+<script type="text/javascript">
+  RED.nodes.registerType("i2c-bus-config",{
+    category: "config",
+    defaults: {
+      "bus": { value: "0", validate:RED.validators.number() }
+    },
+    label: function() {
+      return this.name || ("/dev/i2c-" + this.bus);
+    }
+  });
+</script>
+<script type="text/x-red" data-template-name="i2c-bus-config">
+  <div class="form-row">
+    <label for="node-config-input-bus"><i class="icon-tag"> </i>Bus /dev/i2c-</label>
+    <input type="text" id="node-config-input-bus">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="i2c-bus-config">
+  <p>Hardware I2C bus configuration</p>
+  <p>Enter bus nubmber to be used as part of I2C device name. For example:<br>
+  <ul>
+   <li>I2C Bus number == 2</li>
+   <li>The "/dev/i2c-2" device will be used for i/o</li>
+  </ul>
+  </p>
+</script>
+

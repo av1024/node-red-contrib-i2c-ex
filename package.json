@@ -1,0 +1,22 @@
+{
+  "name": "node-red-contrib-i2c-ex",
+  "version": "0.0.1",
+  "description": "I2C bus re-implementation with extra chip interface nodes",
+  "dependencies": {
+    "i2c-bus": "^4.0.7"
+  },
+  "keywords": [
+    "i2c"
+  ],
+  "files": [
+    "lib"
+  ],
+  "node-red": {
+    "nodes": {
+        "i2c-bus-config": "lib/i2c_ex_cfg.js",
+        "i2c-raw-io": "lib/i2c_ex_raw.js"
+    }
+  },
+  "author": "Alexander Voronin, av1024@gmail.com",
+  "license": "MIT"
+}

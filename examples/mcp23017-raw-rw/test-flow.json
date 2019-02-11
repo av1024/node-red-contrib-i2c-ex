@@ -1,0 +1,463 @@
+[
+    {
+        "id": "8efb30fd.743ab8",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "619c0bcb.93c19c",
+        "type": "i2c-scan",
+        "z": "8efb30fd.743ab8",
+        "bus": "a83d08c3.649b78",
+        "asarray": false,
+        "x": 430,
+        "y": 80,
+        "wires": [
+            [
+                "e2bf9186.c8957"
+            ]
+        ]
+    },
+    {
+        "id": "e2bf9186.c8957",
+        "type": "debug",
+        "z": "8efb30fd.743ab8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 650,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "d2bd540f.a512e",
+        "type": "inject",
+        "z": "8efb30fd.743ab8",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 140,
+        "y": 80,
+        "wires": [
+            [
+                "619c0bcb.93c19c"
+            ]
+        ]
+    },
+    {
+        "id": "1ad76ee3.e7c1b9",
+        "type": "i2c-write",
+        "z": "8efb30fd.743ab8",
+        "bus": "ac8388ff.546208",
+        "addr": "0x27",
+        "cmd": "",
+        "nsize": "1",
+        "x": 510,
+        "y": 200,
+        "wires": [
+            [
+                "f251e6d5.40d04"
+            ]
+        ]
+    },
+    {
+        "id": "77a3305a.5511d8",
+        "type": "inject",
+        "z": "8efb30fd.743ab8",
+        "name": "",
+        "topic": "",
+        "payload": "[0]",
+        "payloadType": "bin",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 130,
+        "y": 200,
+        "wires": [
+            [
+                "957563e4.f8da6"
+            ]
+        ]
+    },
+    {
+        "id": "f251e6d5.40d04",
+        "type": "debug",
+        "z": "8efb30fd.743ab8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 710,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "d79a951d.b1f038",
+        "type": "inject",
+        "z": "8efb30fd.743ab8",
+        "name": "",
+        "topic": "",
+        "payload": "[0]",
+        "payloadType": "bin",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 130,
+        "y": 280,
+        "wires": [
+            [
+                "e13e45a6.f0cf"
+            ]
+        ]
+    },
+    {
+        "id": "e13e45a6.f0cf",
+        "type": "function",
+        "z": "8efb30fd.743ab8",
+        "name": "all out",
+        "func": "msg.command = 0;\nmsg.payload = [0, 0];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 250,
+        "y": 280,
+        "wires": [
+            [
+                "1ad76ee3.e7c1b9"
+            ]
+        ]
+    },
+    {
+        "id": "d14c34d1.a3a548",
+        "type": "function",
+        "z": "8efb30fd.743ab8",
+        "name": "set all",
+        "func": "msg.command = 0x12;\nmsg.payload = [0xFF, 0xFF];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 250,
+        "y": 360,
+        "wires": [
+            [
+                "1ad76ee3.e7c1b9"
+            ]
+        ]
+    },
+    {
+        "id": "d72905a8.6ca4",
+        "type": "function",
+        "z": "8efb30fd.743ab8",
+        "name": "reset #1",
+        "func": "msg.command = 0x12;\nmsg.payload = [0, 0];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 260,
+        "y": 400,
+        "wires": [
+            [
+                "1ad76ee3.e7c1b9"
+            ]
+        ]
+    },
+    {
+        "id": "e7c36a92.14a55",
+        "type": "inject",
+        "z": "8efb30fd.743ab8",
+        "name": "",
+        "topic": "",
+        "payload": "[0]",
+        "payloadType": "bin",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 130,
+        "y": 360,
+        "wires": [
+            [
+                "d14c34d1.a3a548"
+            ]
+        ]
+    },
+    {
+        "id": "7453427b.071aa4",
+        "type": "inject",
+        "z": "8efb30fd.743ab8",
+        "name": "",
+        "topic": "",
+        "payload": "[0]",
+        "payloadType": "bin",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 130,
+        "y": 400,
+        "wires": [
+            [
+                "d72905a8.6ca4"
+            ]
+        ]
+    },
+    {
+        "id": "957563e4.f8da6",
+        "type": "function",
+        "z": "8efb30fd.743ab8",
+        "name": "IOCON reset",
+        "func": "msg.command = 0x0A;\nmsg.payload = [0];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 270,
+        "y": 200,
+        "wires": [
+            [
+                "1ad76ee3.e7c1b9"
+            ]
+        ]
+    },
+    {
+        "id": "fe27fc0c.f3d598",
+        "type": "inject",
+        "z": "8efb30fd.743ab8",
+        "name": "",
+        "topic": "",
+        "payload": "[0]",
+        "payloadType": "bin",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 130,
+        "y": 240,
+        "wires": [
+            [
+                "d756aeaa.84c778"
+            ]
+        ]
+    },
+    {
+        "id": "d756aeaa.84c778",
+        "type": "function",
+        "z": "8efb30fd.743ab8",
+        "name": "IOCON reset",
+        "func": "msg.command = 0x05;\nmsg.payload = [0];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 270,
+        "y": 240,
+        "wires": [
+            [
+                "1ad76ee3.e7c1b9"
+            ]
+        ]
+    },
+    {
+        "id": "15e77a0d.37a2ce",
+        "type": "function",
+        "z": "8efb30fd.743ab8",
+        "name": "set #2",
+        "func": "msg.command = 0x15;\nmsg.payload = [0xFF];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 250,
+        "y": 460,
+        "wires": [
+            [
+                "1ad76ee3.e7c1b9"
+            ]
+        ]
+    },
+    {
+        "id": "451f8a5b.7fb334",
+        "type": "function",
+        "z": "8efb30fd.743ab8",
+        "name": "reset #2",
+        "func": "msg.command = 0x13;\nmsg.payload = [0, 0];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 260,
+        "y": 500,
+        "wires": [
+            [
+                "1ad76ee3.e7c1b9"
+            ]
+        ]
+    },
+    {
+        "id": "342a39ce.cbbfa6",
+        "type": "inject",
+        "z": "8efb30fd.743ab8",
+        "name": "",
+        "topic": "",
+        "payload": "[0]",
+        "payloadType": "bin",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 130,
+        "y": 460,
+        "wires": [
+            [
+                "15e77a0d.37a2ce"
+            ]
+        ]
+    },
+    {
+        "id": "1e2ddf76.237649",
+        "type": "inject",
+        "z": "8efb30fd.743ab8",
+        "name": "",
+        "topic": "",
+        "payload": "[0]",
+        "payloadType": "bin",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 130,
+        "y": 500,
+        "wires": [
+            [
+                "451f8a5b.7fb334"
+            ]
+        ]
+    },
+    {
+        "id": "46b2d1a9.36503",
+        "type": "i2c-read",
+        "z": "8efb30fd.743ab8",
+        "bus": "ac8388ff.546208",
+        "addr": "0x27",
+        "cmd": "",
+        "count": "",
+        "x": 520,
+        "y": 560,
+        "wires": [
+            [
+                "aabd4e6b.bf6d8"
+            ]
+        ]
+    },
+    {
+        "id": "aabd4e6b.bf6d8",
+        "type": "debug",
+        "z": "8efb30fd.743ab8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 710,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "8f8d518e.889f6",
+        "type": "inject",
+        "z": "8efb30fd.743ab8",
+        "name": "",
+        "topic": "",
+        "payload": "[0]",
+        "payloadType": "bin",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 130,
+        "y": 560,
+        "wires": [
+            [
+                "5f3b0dd6.6b5654"
+            ]
+        ]
+    },
+    {
+        "id": "5f3b0dd6.6b5654",
+        "type": "function",
+        "z": "8efb30fd.743ab8",
+        "name": "read all",
+        "func": "msg.command = 0x12;\nmsg.count = 2;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 260,
+        "y": 560,
+        "wires": [
+            [
+                "46b2d1a9.36503"
+            ]
+        ]
+    },
+    {
+        "id": "f6ae1646.fd9148",
+        "type": "function",
+        "z": "8efb30fd.743ab8",
+        "name": "set #1=0F",
+        "func": "msg.command = 0x12;\nmsg.payload = [0x0F];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 270,
+        "y": 320,
+        "wires": [
+            [
+                "1ad76ee3.e7c1b9"
+            ]
+        ]
+    },
+    {
+        "id": "2ea43682.00b1aa",
+        "type": "inject",
+        "z": "8efb30fd.743ab8",
+        "name": "",
+        "topic": "",
+        "payload": "[0]",
+        "payloadType": "bin",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 130,
+        "y": 320,
+        "wires": [
+            [
+                "f6ae1646.fd9148"
+            ]
+        ]
+    },
+    {
+        "id": "fd7cba43.987af8",
+        "type": "comment",
+        "z": "8efb30fd.743ab8",
+        "name": "MCP23017 at 0x27 test control",
+        "info": "",
+        "x": 390,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "a83d08c3.649b78",
+        "type": "i2c-bus-config",
+        "z": "",
+        "bus": "0"
+    },
+    {
+        "id": "ac8388ff.546208",
+        "type": "i2c-bus-config",
+        "z": "",
+        "bus": "10"
+    }
+]

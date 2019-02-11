@@ -1,0 +1,169 @@
+<!-- i2c-scan -->
+<script type="text/javascript">
+  RED.nodes.registerType("i2c-scan",{
+    category: "i2c",
+    color: "#C7E9C0",
+    icon: "debug.png",
+    inputs: 1,
+    outputs: 1,
+    defaults: {
+      "bus" : { value: "", type:"i2c-bus-config" },
+      "asarray": { value: false }
+    },
+    label: function() {
+      return this.name || ("i2c scan " + this.bus.label());
+    }
+  });
+</script>
+<script type="text/x-red" data-template-name="i2c-scan">
+  <div class="form-row">
+    <label for="node-input-bus"><i class="fa fa-microchip"></i> I2C bus</label>
+    <input type="text" id="node-input-bus">
+  </div>
+  <div class="form-row">
+    <label for="node-input-asarray"><i class="icon-tag"></i> Combine to array</label>
+    <input type="checkbox" id="node-input-asarray">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="i2c-scan">
+  <p>Scan selected i2c bus for existing devices</p>
+  <h3>Details</h3>
+  <p>
+    <b>I2C bus</b>: hardware (/dev/i2c-X) bus to be used<br/>
+    <b>Combine to array</b>: Output result as single array instead of message per address. <b>Note:</b>
+    when true, use synchronous i2c scan version, othervise - async with callback
+    <br/>
+  </p>
+</script>
+
+<!-- i2c write -->
+<script type="text/javascript">
+  RED.nodes.registerType("i2c-write",{
+    category: "i2c",
+    color: "#C7E9C0",
+    icon: "serial.png",
+    inputs: 1,
+    outputs: 1,
+    defaults: {
+      "bus" : { value: "", type:"i2c-bus-config" },
+      "addr": { value: "", required: true, validate:function(v) {
+                let x = parseInt(v); return !isNaN(x) && (x >= 3) && (x <= 0x77);
+                }
+              },
+      "cmd": { value: "", validate:function(v) {
+          let x = parseInt(v);
+          return (!v) || (x && x>0 && x<=255);
+        }},
+      "nsize": { value: "1", validate:function(v) {
+          let x = parseInt(v);
+          return !isNan(x) && (x > 0) && (x < 7); // node.Buffer.writeIntLE max 6 bytes
+        } }
+    },
+    label: function() {
+      return this.name || ("i2c write " + this.bus.label());
+    }
+  });
+</script>
+<script type="text/x-red" data-template-name="i2c-write">
+  <div class="form-row">
+    <label for="node-input-bus"><i class="fa fa-microchip"></i>I2C bus</label>
+    <input type="text" id="node-input-bus">
+  </div>
+  <div class="form-row">
+    <label for="node-input-addr"><i class="fa fa-tag"></i>Address</label>
+    <input type="text" id="node-input-addr">
+  </div>
+  <div class="form-row">
+    <label for="node-input-cmd"><i class="fa fa-tag"></i>Command</label>
+    <input type="text" id="node-input-cmd">
+  </div>
+  <div class="form-row">
+    <label for="node-input-nsize"><i class="fa fa-tag"></i>Number size</label>
+    <input type="text" id="node-input-nsize">
+  </div>
+</script>
+<script type="text/x-red" data-help-name="i2c-write">
+  <p>Write data to i2c device</p>
+  <h3>Inputs:</h3>
+   <dl class="message-properties">
+    <dt>payload <span class="property-type">buffer | string | number</span></dt>
+      <dd>data to be written</dd>
+    <dt>addr <span class="property-type">number</span></dt>
+      <dd>I2C device address [msg.addr] (by default 0x03..0x77 are valid)</dd>
+    <dt>command <span class="property-type">number</span></dt>
+      <dd>I2C device command [msg.command] (register number)</dd>
+    <dt>nsize <span class="property-type">number</span></dt>
+      <dd>Byte size for payload passed as <code>number</code> [msg.nsize] (1..6 bytes)</dd>
+   </dl>
+</script>
+
+
+<!-- i2c read -->
+<script type="text/javascript">
+  RED.nodes.registerType("i2c-read",{
+    category: "i2c",
+    color: "#C7E9C0",
+    icon: "serial.png",
+    inputs: 1,
+    outputs: 1,
+    defaults: {
+      "bus" : { value: "", type:"i2c-bus-config" },
+      "addr": { value: "", required: true, validate:function(v) {
+                let x = parseInt(v); return !isNaN(x) && (x >= 3) && (x <= 0x77);
+                }
+              },
+      "cmd": { value: "", validate:function(v) {
+          let x = parseInt(v);
+          return (!v) || (x && x>0 && x<=255);
+        }},
+      "count": { value: "", validate:function(v) {
+          return (!v) || parseInt(v);
+        } }
+    },
+    label: function() {
+      return this.name || ("i2c read " + this.bus.label());
+    }
+  });
+</script>
+<script type="text/x-red" data-template-name="i2c-read">
+  <div class="form-row">
+    <label for="node-input-bus"><i class="fa fa-microchip"></i>I2C bus</label>
+    <input type="text" id="node-input-bus">
+  </div>
+  <div class="form-row">
+    <label for="node-input-addr"><i class="fa fa-tag"></i>Address</label>
+    <input type="text" id="node-input-addr">
+  </div>
+  <div class="form-row">
+    <label for="node-input-cmd"><i class="fa fa-tag"></i>Command</label>
+    <input type="text" id="node-input-cmd">
+  </div>
+  <div class="form-row">
+    <label for="node-input-count"><i class="fa fa-tag"></i>Number size</label>
+    <input type="text" id="node-input-count">
+  </div>
+</script>
+<script type="text/x-red" data-help-name="i2c-read">
+  <p>Reade data from i2c device</p>
+  <h3>Inputs:</h3>
+   <dl class="message-properties">
+    <dt>addr <span class="property-type">number</span></dt>
+      <dd>I2C device address [msg.addr] (by default 0x03..0x77 are valid)</dd>
+    <dt>command <span class="property-type">number</span></dt>
+      <dd>I2C device command [msg.command] (register number)</dd>
+    <dt>count <span class="property-type">number</span></dt>
+      <dd>Count bytes to read [msg.count]</dd>
+
+  <h3>Outputs:</h3>
+  <dl class="message-properties">
+    <dt>payload <span class="property-type">buffer</span></dt>
+      <dd>received data</dd>
+    <dt>size <span class="property-type">number</span></dt>
+      <dd>Received data size</dd>
+    <dt>addr <span class="property-type">number</span></dt>
+      <dd>I2C device address as passed to node</dd>
+    <dt>command <span class="property-type">number</span></dt>
+      <dd>I2C device command as passed to node</dd>
+  </dl>
+</script>
