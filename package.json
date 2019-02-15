@@ -15,7 +15,9 @@
     "nodes": {
         "i2c-bus-config": "lib/i2c_ex_cfg.js",
         "i2c-raw-io": "lib/i2c_ex_raw.js",
-        "i2c-mcp23017": "lib/i2c_mcp23017.js"
+        "i2c-mcp23017": "lib/i2c_mcp23017.js",
+        "i2c-mcp23017-config": "lib/i2c_mcp23017_config.js",
+        "i2c-mcp23017-out": "lib/i2c_mcp23017_out.js"
     }
   },
   "author": "Alexander Voronin, av1024@gmail.com",

@@ -1,0 +1,123 @@
+<!-- =========== mcp23017-out ================= -->
+
+<script type="text/javascript">
+    RED.nodes.registerType("i2c-mcp23017 out",{
+      category: "i2c",
+      color: "#C7E9C0",
+      icon: "arrow-in.png",
+      inputs: 1,
+      outputs: 0,
+      align: "right",
+      defaults: {
+        "name": { value: ""},
+        "chip" : { value: "", type:"i2c-mcp23017-config" },
+        "bit": { value: "", required: true, validate:(v) => {
+            const x = parseInt(v);
+            return /*!isNaN(x) && */ x >= 0 && x <= 15;
+          } }
+      },
+      label: function() {
+        let chip = RED.nodes.node(this.chip);
+        return this.name || "23017 0x" + parseInt(chip.addr).toString(16) + "#" + this.bit;
+      },
+      oneditprepare: function() {
+        // get available pins
+        let abit = parseInt(this.bit);
+        if (abit >=0 && abit <= 15) {
+          $("#node-input-bit").append($("<option>", {value: abit}).text(abit));
+          $("#node-input-bit").val(abit).change();
+        }
+        let test = RED.nodes.node(this.chip);
+        console.log("CHIP node:");
+        console.dir(test);
+        
+        $("#node-input-chip").change(()=>{
+          var chip = $("#node-input-chip");
+          var chipid = chip.children("option:selected").val();
+          var bit = $("#node-input-bit").children("option:selected").val();
+          if (chipid && chipid != "_ADD_") {
+            $.ajax({
+              url: "i2c-mcp23017/pins/" + chipid,
+              type: "GET",
+              dataType: "json",
+              error: (err) => {
+                if (err.status == 404) {
+                  RED.notify("Chip not found.\nYou may needed to deploy config node before continue.", "warning", false, 10000);
+                } else {
+                  RED.notify("Can't get pin list.\nStatus: " + err.status + " (" + err.statusText + ")", "error", false, 10000);
+                }
+              },
+              success: (data) => {
+                if (data && data.free) {
+                  var sel = $("#node-input-bit");
+                  if (parseInt(bit) >= 0) {
+                    data.free.push(parseInt(bit));
+                    data.free.sort((a,b)=>{ return parseInt(a)-parseInt(b); });
+                  }
+                  sel.empty();
+                  for(var i=0;i<data.free.length;i++) {
+                    sel.append($("<option>", {value: data.free[i]}).text(data.free[i]));
+                  }
+                  if (parseInt(bit) >= 0) {
+                    sel.val(parseInt(bit)).change();
+                  }
+                }
+              }
+            });
+          }
+        });
+
+        /*
+        var chip = RED.nodes.node(this.chip);
+        var curr = parseInt(this.bit);
+        curr = curr >= 0 ? curr : -1;
+        var anode = this;
+        bits = $.getJSON("i2c-mcp23017/pins/" + anode.id + "?chip=" + chip.id, function(data) {
+          if (data.result) {
+            // got list of avail. bits
+            var combo = $("#node-input-bit");
+            for(i=0;i<data.freeBits.length;i++) {
+              var b = data.freeBits[i];
+              combo.append($("<option>", {value:b}).text(b));
+            }
+            if (curr >=0 ) { combo.val(curr).change(); }
+          } else {
+            $("#av-msg").text(JSON.stringify(data));
+          }
+  
+        });
+        */
+      }
+    });
+  </script>
+  
+  <script type="text/x-red" data-template-name="i2c-mcp23017 out">
+    <div class="form-row">
+      <label for="node-input-chip"><i class="fa fa-microchip"></i> Chip</label>
+      <input type="text" id="node-input-chip">
+    </div>
+    <div class="form-row">
+      <label for="node-input-bit"><i class="icon-tag"></i> Bit</label>
+      <select id="node-input-bit"></select>
+      <span id="#av-msg"></span>
+    </div>
+    <div class="form-row">
+      <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+  </script>
+  
+  <script type="text/x-red" data-help-name="i2c-mcp23017 out">
+    <p>MCP23017 single pin output</p>
+    <h3>Params:</h3>
+    <dl class="message-properties">
+      <dt>chip <span class="property-type">i2c-mcp23017-config</span></dt>
+       <dd>Base MCP23017 node</dd>
+    </dl>
+    <dl class="message-properties">
+      <dt>bit <span class="property-type">number</span></dt>
+       <dd>MCP23017 bit number [0..17], 0..7 for port A, 8..15 for port B </dd>
+    </dl>
+  </script>
+  
+  

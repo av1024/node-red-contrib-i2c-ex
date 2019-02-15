@@ -1,0 +1,44 @@
+<!-- =========== mcp23017-config ================= -->
+<script type="text/javascript">
+    RED.nodes.registerType("i2c-mcp23017-config",{
+      category: "config",
+      color: "#C7E9C0",
+      icon: "cog.png",
+      inputs: 0,
+      outputs: 0,
+      defaults: {
+        "bus" : { value: "", type:"i2c-bus-config" },
+        "addr": { value: 0x20, required: true, validate:(v) => {
+            const x = parseInt(v);
+            return x && x >= 0x20 && x <= 0x27;
+          } }
+      },
+      label: function() {
+        return this.name || ("23017 0x" + this.addr.toString(16));
+      }
+    });
+  </script>
+  <script type="text/x-red" data-template-name="i2c-mcp23017-config">
+    <div class="form-row">
+      <label for="node-config-input-bus"><i class="fa fa-microchip"></i> I2C bus</label>
+      <input type="text" id="node-config-input-bus">
+    </div>
+    <div class="form-row">
+      <label for="node-config-input-addr"><i class="icon-tag"></i> Chip addr</label>
+      <input type="text" id="node-config-input-addr">
+    </div>
+  </script>
+  
+  <script type="text/x-red" data-help-name="i2c-mcp23017-config">
+    <p>MCP23017 base chip</p>
+    <h3>Params:</h3>
+    <dl class="message-properties">
+      <dt>bus <span class="property-type">i2c-bus</span></dt>
+       <dd>I2C bus where chip located</dd>
+    </dl>
+    <dl class="message-properties">
+      <dt>addr <span class="property-type">number</span></dt>
+       <dd>I2C address of chip [0x20-0x27]</dd>
+    </dl>
+  </script>
+  
