@@ -22,14 +22,64 @@
       },
       oneditprepare: function() {
         // get available pins
-        let abit = parseInt(this.bit);
-        if (abit >=0 && abit <= 15) {
+        
+        /*if (abit >=0 && abit <= 15) {
           $("#node-input-bit").append($("<option>", {value: abit}).text(abit));
           $("#node-input-bit").val(abit).change();
         }
-        let test = RED.nodes.node(this.chip);
-        console.log("CHIP node:");
-        console.dir(test);
+        */
+        
+        this.fillPins = function(chip_id) {
+          var _pins = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
+          let test = RED.nodes.node(chip_id);
+          var abit = parseInt(this.bit);
+          console.log("Pins init: " + _pins);
+          for(var u of test.users) {
+            if ("bit" in u && !isNaN(abit) && u.bit != abit) {
+              _pins = _pins.filter(x => x != u.bit);
+            }
+          }
+          //FIXME: on chip change abit ma duplicate existing node. Need debugging...
+          /*
+          if (abit >= 0 && abit <= 15) {
+            if (!_pins.includes(abit)) {
+              RED.notify("Selected pin #" + abit + " already in use for this chip.", "warning",false, 5000);
+              abit = NaN;
+            } else {
+              _pins.push
+            }
+          }
+          */
+          var sel = $("#node-input-bit");
+          sel.empty();
+          console.log("Pins free: " + _pins);
+          for(i of _pins) {
+            sel.append($("<option>", {value: i}).text(i));
+          }
+          if (!isNaN(abit)) {
+            sel.val(abit).change();
+          }
+        }
+        
+        //this.fillPins(this.chip);
+        var node = this;
+        $("#node-input-chip").change((evt)=>{
+          var chip = $("#node-input-chip");
+          var chipid = chip.children("option:selected").val();
+          //console.log("chip-change event, selected: " + chipid);
+          //console.log(evt);
+          if (chipid && chipid != "_ADD_") {
+            var ch = RED.nodes.node(chipid);
+            console.log("RE-fill list... for " + chipid);
+            node.fillPins(chipid);
+          }
+          evt.stopPropagation();
+          //evt.result = true;
+        });
+        //FIXME: TEST
+        return;
+
+        /*
         
         $("#node-input-chip").change(()=>{
           var chip = $("#node-input-chip");
@@ -66,6 +116,7 @@
             });
           }
         });
+        */
 
         /*
         var chip = RED.nodes.node(this.chip);

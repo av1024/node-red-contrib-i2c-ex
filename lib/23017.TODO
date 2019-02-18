@@ -1,0 +1,5 @@
+TODO:
+
+ * mode get/set logic to html/mcp23017chip ( node.users[] -> user._config.bits -> ...)
+ ** algo for check pin duplicates in html handler when chip changed (? loop through .users and compare bit AND node id with current ???)
+ 

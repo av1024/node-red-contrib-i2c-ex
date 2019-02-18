@@ -14,7 +14,7 @@
           } }
       },
       label: function() {
-        return this.name || ("23017 0x" + this.addr.toString(16));
+        return this.name || ("23017 0x" + parseInt(this.addr).toString(16));
       }
     });
   </script>
