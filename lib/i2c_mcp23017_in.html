@@ -1,0 +1,155 @@
+<!-- =========== mcp23017-out ================= -->
+
+<script type="text/javascript">
+  RED.nodes.registerType("i2c-mcp23017 in",{
+    category: "i2c",
+    color: "#C7E9C0",
+    icon: "arrow-in.png",
+    inputs: 1,
+    outputs: 1,
+    align: "left",
+    inputLabels: "poll",
+    defaults: {
+      "name": { value: ""},
+      "chip" : { value: "", type:"i2c-mcp23017-config" },
+      "bit": { value: "", required: true, validate:(v) => {
+          const x = parseInt(v);
+          return /*!isNaN(x) && */ x >= 0 && x <= 15;
+        } },
+      "pullup": { value: false },
+      "invert": { value: false },
+      "irq": { value: false }
+    },
+    label: function() {
+      let chip = RED.nodes.node(this.chip) || {addr: 0};
+      return this.name || "23017 0x" + parseInt(chip.addr).toString(16) + "#" + parseInt(this.bit);
+    },
+    oneditprepare: function() {
+      /// get available pins
+      this.fillPins = (chip_id, curr_bit) => {
+        var _pins = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
+        let test = RED.nodes.node(chip_id);
+        var abit = parseInt(curr_bit);
+        for(var u of test.users) {
+          if ("bit" in u) {
+            if (!isNaN(abit) && u.bit==abit) {
+              if (u.id !=this.id) {
+                _pins = _pins.filter(x => x != u.bit);
+                RED.notify("This pin #" + abit + " in use by other node. Will be reset.", "warning");
+                abit = NaN;
+              }
+            } else {
+              _pins = _pins.filter(x => x != u.bit);
+            }
+          }
+        }
+        
+        var sel = $("#node-input-bit");
+        sel.empty();
+        for(i of _pins) {
+          sel.append($("<option>", {value: i}).text(i));
+        }
+        if (!isNaN(abit)) {
+          sel.val(abit).change();
+        } else {
+          sel.val("").change();
+        }
+      } // fillPins()
+      
+      var node = this;
+      $("#node-input-chip").change((evt)=>{
+        var chip = $("#node-input-chip");
+        var chipid = chip.children("option:selected").val();
+        if (chipid && chipid != "_ADD_") {
+          var ch = RED.nodes.node(chipid);
+          var bt = $("#node-input-bit").children("option:selected").val();
+          node.fillPins(chipid, bt || node.bit);
+        }
+      });
+    // oneditprepare
+    }
+  });
+</script>
+<script type="text/x-red" data-template-name="i2c-mcp23017 in">
+  <div class="form-row">
+    <label for="node-input-chip"><i class="fa fa-microchip"></i> Chip</label>
+    <input type="text" id="node-input-chip">
+  </div>
+  <div class="form-row">
+    <label for="node-input-bit"><i class="icon-tag"></i> Bit</label>
+    <select id="node-input-bit"></select>
+    <span id="#av-msg"></span>
+  </div>
+  <div class="form-row">
+    <label for="node-input-pullup"><i class="fa fa-microchip"></i> Pull-Up</label>
+    <input type="checkbox" id="node-input-pullup">
+  </div>
+  <div class="form-row">
+    <label for="node-input-invert"><i class="fa fa-microchip"></i> Invert</label>
+    <input type="checkbox" id="node-input-invert">
+  </div>
+  <div class="form-row">
+    <label for="node-input-irq"><i class="fa fa-microchip"></i> IRQ</label>
+    <input type="checkbox" id="node-input-irq">
+  </div>
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="i2c-mcp23017 in">
+  <p>MCP23017 single pin input</p>
+  <h3>Params:</h3>
+  <dl class="message-properties">
+    <dt>chip <span class="property-type">i2c-mcp23017-config</span></dt>
+     <dd>Base MCP23017 node</dd>
+  </dl>
+  <dl class="message-properties">
+    <dt>bit <span class="property-type">number</span></dt>
+     <dd>MCP23017 bit number [0..17], 0..7 for port A, 8..15 for port B </dd>
+  </dl>
+  <dl class="message-properties">
+    <dt>pullup <span class="property-type">boolean</span></dt>
+     <dd>Activate on-chip pullup (100k) </dd>
+  </dl>
+  <dl class="message-properties">
+    <dt>invert <span class="property-type">boolean</span></dt>
+     <dd>Activate on-chip pin state inversion</dd>
+  </dl>
+  <dl class="message-properties">
+    <dt>irq <span class="property-type">boolean</span></dt>
+     <dd>Activate on-chip pin change IRQ. Note! Remember to set valid IRQ settings on config node.</dd>
+  </dl>
+  <h3>Input:</h3>
+  <p>Any input message on 'poll' input forces polling pin state.</p>
+  Note! affects other nodes if input state changed:
+  <ul>
+    <li>If input state changed since last read - all changed nodes will emit new message</li>
+    <li>If <b>NO</b> input state changes - ONLY THIS node emit current state message</li>
+  </ul>
+  <h3>Output:</h3>
+  <dl class="message-properties">
+    <dt>payload <span class="property-type">number</span></dt>
+     <dd>0 or 1: Current pin state</dd>
+  </dl>
+  <dl class="message-properties">
+    <dt>irq <span class="property-type">number</span></dt>
+     <dd>0 or 1: There IRQ flag is sert for this pin</dd>
+  </dl>
+  <dl class="message-properties">
+    <dt>poll <span class="property-type">number</span></dt>
+     <dd>0 or 1: If 1 then message emited by polling, not state change/IRQ (e.g. "forced poll"</dd>
+  </dl>
+  <dl class="message-properties">
+    <dt>pin <span class="property-type">number</span></dt>
+      <dd>Message source pin number</dd>
+  </dl>
+  <dl class="message-properties">
+    <dt>addr <span class="property-type">number</span></dt>
+      <dd>Message source chip address</dd>
+  </dl>
+
+</script>
+
+

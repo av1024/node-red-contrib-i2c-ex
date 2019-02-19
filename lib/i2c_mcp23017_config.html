@@ -11,7 +11,10 @@
         "addr": { value: 0x20, required: true, validate:(v) => {
             const x = parseInt(v);
             return x && x >= 0x20 && x <= 0x27;
-          } }
+          } },
+        "joinirq": { value: true },
+        "irqod": { value: true },
+        "bufferout": { value: "0", validate:RED.validators.number()}
       },
       label: function() {
         return this.name || ("23017 0x" + parseInt(this.addr).toString(16));
@@ -27,6 +30,19 @@
       <label for="node-config-input-addr"><i class="icon-tag"></i> Chip addr</label>
       <input type="text" id="node-config-input-addr">
     </div>
+    <div class="form-row">
+      <label for="node-config-input-joinirq"><i class="icon-tag"></i> Join A/B IRQ</label>
+      <input type="checkbox" id="node-config-input-joinirq">
+    </div>
+    <div class="form-row">
+      <label for="node-config-input-irqod"><i class="icon-tag"></i> IRQ OpenDrain</label>
+      <input type="checkbox" id="node-config-input-irqod">
+    </div>
+    <div class="form-row">
+      <label for="node-config-input-bufferout"><i class="icon-tag"></i> Buffer outs, ms</label>
+      <input type="text" id="node-config-input-bufferout">
+    </div>
+    
   </script>
   
   <script type="text/x-red" data-help-name="i2c-mcp23017-config">
@@ -39,6 +55,18 @@
     <dl class="message-properties">
       <dt>addr <span class="property-type">number</span></dt>
        <dd>I2C address of chip [0x20-0x27]</dd>
+    </dl>
+    <dl class="message-properties">
+      <dt>joinirq <span class="property-type">boolean</span></dt>
+       <dd>Enable chip function to join IRQ pins state for ports A and B</dd>
+    </dl>
+    <dl class="message-properties">
+      <dt>irqod <span class="property-type">boolean</span></dt>
+       <dd>Configure chip IRQ pin as OpenDrain or CMOS output</dd>
+    </dl>
+    <dl class="message-properties">
+      <dt>bufferOut [ms]<span class="property-type">number</span></dt>
+       <dd>Buffer writes to hardware when output nodes changed. Reduce number of I2C I/O. Set to empty o zero to disable</dd>
     </dl>
   </script>
   

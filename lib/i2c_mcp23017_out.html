@@ -17,127 +17,53 @@
           } }
       },
       label: function() {
-        let chip = RED.nodes.node(this.chip);
-        return this.name || "23017 0x" + parseInt(chip.addr).toString(16) + "#" + this.bit;
+        let chip = RED.nodes.node(this.chip) || {addr: 0};
+        return this.name || "23017 0x" + parseInt(chip.addr).toString(16) + "#" + parseInt(this.bit);
       },
       oneditprepare: function() {
-        // get available pins
-        
-        /*if (abit >=0 && abit <= 15) {
-          $("#node-input-bit").append($("<option>", {value: abit}).text(abit));
-          $("#node-input-bit").val(abit).change();
-        }
-        */
-        
-        this.fillPins = function(chip_id) {
+
+        /// get available pins
+        this.fillPins = (chip_id, curr_bit) => {
           var _pins = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
           let test = RED.nodes.node(chip_id);
-          var abit = parseInt(this.bit);
-          console.log("Pins init: " + _pins);
+          var abit = parseInt(curr_bit);
           for(var u of test.users) {
-            if ("bit" in u && !isNaN(abit) && u.bit != abit) {
-              _pins = _pins.filter(x => x != u.bit);
+            if ("bit" in u) {
+              if (!isNaN(abit) && u.bit==abit) {
+                if (u.id !=this.id) {
+                  _pins = _pins.filter(x => x != u.bit);
+                  RED.notify("This pin #" + abit + " in use by other node. Will be reset.", "warning");
+                  abit = NaN;
+                }
+              } else {
+                _pins = _pins.filter(x => x != u.bit);
+              }
             }
           }
-          //FIXME: on chip change abit ma duplicate existing node. Need debugging...
-          /*
-          if (abit >= 0 && abit <= 15) {
-            if (!_pins.includes(abit)) {
-              RED.notify("Selected pin #" + abit + " already in use for this chip.", "warning",false, 5000);
-              abit = NaN;
-            } else {
-              _pins.push
-            }
-          }
-          */
+          
           var sel = $("#node-input-bit");
           sel.empty();
-          console.log("Pins free: " + _pins);
           for(i of _pins) {
             sel.append($("<option>", {value: i}).text(i));
           }
           if (!isNaN(abit)) {
             sel.val(abit).change();
+          } else {
+            sel.val("").change();
           }
-        }
+        } // fillPins()
         
-        //this.fillPins(this.chip);
         var node = this;
         $("#node-input-chip").change((evt)=>{
           var chip = $("#node-input-chip");
           var chipid = chip.children("option:selected").val();
-          //console.log("chip-change event, selected: " + chipid);
-          //console.log(evt);
           if (chipid && chipid != "_ADD_") {
             var ch = RED.nodes.node(chipid);
-            console.log("RE-fill list... for " + chipid);
-            node.fillPins(chipid);
-          }
-          evt.stopPropagation();
-          //evt.result = true;
-        });
-        //FIXME: TEST
-        return;
-
-        /*
-        
-        $("#node-input-chip").change(()=>{
-          var chip = $("#node-input-chip");
-          var chipid = chip.children("option:selected").val();
-          var bit = $("#node-input-bit").children("option:selected").val();
-          if (chipid && chipid != "_ADD_") {
-            $.ajax({
-              url: "i2c-mcp23017/pins/" + chipid,
-              type: "GET",
-              dataType: "json",
-              error: (err) => {
-                if (err.status == 404) {
-                  RED.notify("Chip not found.\nYou may needed to deploy config node before continue.", "warning", false, 10000);
-                } else {
-                  RED.notify("Can't get pin list.\nStatus: " + err.status + " (" + err.statusText + ")", "error", false, 10000);
-                }
-              },
-              success: (data) => {
-                if (data && data.free) {
-                  var sel = $("#node-input-bit");
-                  if (parseInt(bit) >= 0) {
-                    data.free.push(parseInt(bit));
-                    data.free.sort((a,b)=>{ return parseInt(a)-parseInt(b); });
-                  }
-                  sel.empty();
-                  for(var i=0;i<data.free.length;i++) {
-                    sel.append($("<option>", {value: data.free[i]}).text(data.free[i]));
-                  }
-                  if (parseInt(bit) >= 0) {
-                    sel.val(parseInt(bit)).change();
-                  }
-                }
-              }
-            });
+            var bt = $("#node-input-bit").children("option:selected").val();
+            node.fillPins(chipid, bt || node.bit);
           }
         });
-        */
-
-        /*
-        var chip = RED.nodes.node(this.chip);
-        var curr = parseInt(this.bit);
-        curr = curr >= 0 ? curr : -1;
-        var anode = this;
-        bits = $.getJSON("i2c-mcp23017/pins/" + anode.id + "?chip=" + chip.id, function(data) {
-          if (data.result) {
-            // got list of avail. bits
-            var combo = $("#node-input-bit");
-            for(i=0;i<data.freeBits.length;i++) {
-              var b = data.freeBits[i];
-              combo.append($("<option>", {value:b}).text(b));
-            }
-            if (curr >=0 ) { combo.val(curr).change(); }
-          } else {
-            $("#av-msg").text(JSON.stringify(data));
-          }
-  
-        });
-        */
+      // oneditprepare
       }
     });
   </script>
