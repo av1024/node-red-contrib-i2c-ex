@@ -9,6 +9,15 @@
     outputs: 1,
     defaults: {
       "chip" : { value: "", type:"i2c-mcp23017-config" },
+      "polltime": { value: "125", validation:function(v) {
+        const x = parseInt(v);
+        if (isNaN(x) || x<0) return false;
+        if (x > 1000) {
+          RED.notify("Poll time more than 1s. Check settings", "warning", true, 5000);
+        }
+        return true;
+      }},
+      "autopoll": { value: false },
       "name": { value: ""}
     },
     label: function() {
@@ -23,6 +32,14 @@
     <input type="text" id="node-input-chip">
   </div>
   <div class="form-row">
+    <label for="node-input-polltime"><i class="fa fa-clock-o"></i> Pol period, ms</label>
+    <input type="text" id="node-input-polltime">
+  </div>
+  <div class="form-row">
+    <label for="node-input-autopoll"><i class="fa fa-repeat"></i> Poll autostart</label>
+    <input type="checkbox" id="node-input-autopoll">
+  </div>
+  <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
     <input type="text" id="node-input-name" placeholder="Name">
   </div>
@@ -35,8 +52,24 @@
     <dt>chip <span class="property-type">i2c-mcp23017-config</span></dt>
      <dd>Base MCP23017 node</dd>
   </dl>
+  <dl class="message-properties">
+    <dt>polltime <span class="property-type">number</span></dt>
+     <dd>Default time in ms for inputs polling (may be changed via input msg. Set to 0 to disable poll</dd>
+  </dl>
+  <dl class="message-properties">
+    <dt>autopoll <span class="property-type">boolean</span></dt>
+     <dd>Start polling automatically</dd>
+  </dl>
   <h3>Inputs:</h3>
-  <b>TODO...</b>
+  <p>Input parameters may either <code>msg</code> or <code>msg.payload</code> properties</p>
+  <dl class="message-properties">
+    <dt>poll <span class="property-type">string number boolean</span></dt>
+     <dd>Start/Stop polling. The strings 'on', 'start', 'off', 'stop' can be used as on/off commands</dd>
+  </dl>
+  <dl class="message-properties">
+    <dt>polltime <span class="property-type">number</span></dt>
+     <dd>Change polling time</dd>
+  </dl>
   <h3>Outputs:</h3>
   <b>TODO...</b>
 </script>
